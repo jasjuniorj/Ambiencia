@@ -1,7 +1,7 @@
 ## APP - Ambiência Racial ###
 
-install.packages("dashboardthemes")
-install.packages("fresh")
+#install.packages("dashboardthemes")
+#install.packages("fresh")
 
 
 library(fresh)
@@ -9,6 +9,27 @@ library(shiny)
 library(shinydashboard)
 library(dashboardthemes)
 library(shinyjs)
+
+mytheme <- create_theme(
+  
+  adminlte_color(
+    light_blue = "#000000",
+    
+  ),
+  adminlte_sidebar(
+    width = "200px",
+    dark_bg = "#000000", #lateral
+    dark_hover_bg = "#CE0707", # detaque da lateral
+    dark_color = "#FFFFFF" # fontes da lateral
+  ),
+  
+  adminlte_global(
+    content_bg = "#FFFFFF", #fundo do MainPainel
+    box_bg = "#FFFFFF", # Detalhes da box
+    info_box_bg = "#FFFFFF" # Detalhes das box
+    
+  )
+)
 
 
 ui <- dashboardPage(
@@ -209,26 +230,7 @@ server <- function(input, output, session) {
 shinyApp(ui, server)
 
 
-mytheme <- create_theme(
-  
-  adminlte_color(
-    light_blue = "#000000",
-    
-  ),
-  adminlte_sidebar(
-    width = "200px",
-    dark_bg = "#000000", #lateral
-    dark_hover_bg = "#CE0707", # detaque da lateral
-    dark_color = "#FFFFFF" # fontes da lateral
-  ),
-  
-  adminlte_global(
-    content_bg = "#FFFFFF", #fundo do MainPainel
-    box_bg = "#FFFFFF", # Detalhes da box
-    info_box_bg = "#FFFFFF" # Detalhes das box
-    
-  )
-)
+
 
 
 
