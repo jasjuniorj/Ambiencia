@@ -21,8 +21,8 @@ ui <- dashboardPage(
       br(),
       br(),
       menuItem("Sobre", tabName = "Sobre"),
-      menuItem("Escola", tabName = "Mun"),
-      menuItem("Empresa", tabName = "Cal")
+      menuItem("Escolas", tabName = "Mun"),
+      menuItem("Empresas", tabName = "Emp")
      
     )
   ),
@@ -37,7 +37,7 @@ ui <- dashboardPage(
       ),
       
       tabItem(tabName = "Mun",
-        # infoBoxes
+        
         fluidPage(
           
           fluidRow(
@@ -100,34 +100,52 @@ ui <- dashboardPage(
           br(),
           fluidRow(
             column(
-              width = 8.5,
-              height = 380,
+              width = 9.5,
+              height = 320,
               tabBox(
-                width = 8,
-                height = 480,
+                width = 9.5,
+                height = 300,
                 title = "Calcule",
                 id = "tabset3",
-                tabPanel("Informe",
+                tabPanel("Demodidática",
                          solidHeader = FALSE,
                          numericInput('idnumerica1', 'Alunos Não-Brancos (%):', 0, min = 0, max = 100, step = 5),
                          numericInput('idnumerica2', 'Professores Não-Brancos (%):', 0, min = 0, max = 100, step = 5),
-                         numericInput('idnumerica3', 'Professores com formação estudos afro-Brasileiros (%):', 0, min = 0, max = 100, step = 5),
-                         numericInput('idnumerica4', 'Professores com formação direitos humanos (%):', 0, min = 0, max = 100, step = 5),
-                         radioButtons('idmater', 'Material didático - diversidade étnica', list('Sim' = 0, 'Não' = 1 ), inline = TRUE),
-                         radioButtons('idmater', 'Material didático - culturas indégenas', list('Sim' = 0, 'Não' = 1 ), inline = TRUE)
+                         radioButtons('idmater1', 'Material didático - diversidade étnica', list('Sim' = 0, 'Não' = 1 ), inline = TRUE),
+                         radioButtons('idmater2', 'Material didático - culturas indégenas', list('Sim' = 0, 'Não' = 1 ), inline = TRUE)
                          
-                         )
+                         ),
+                tabPanel("Formação",
+                         solidHeader = FALSE,
+                         numericInput('idnumerica3', 'Professores com formação estudos afro-Brasileiros (%):', 0, min = 0, max = 100, step = 5),
+                         numericInput('idnumerica4', 'Professores com formação direitos humanos (%):', 0, min = 0, max = 100, step = 5)
+                  
+                )
+                
               )
               
             )
             
+          ),
+          
+          fluidRow(
+            column(
+              width = 9.5,
+              valueBoxOutput("valor", width = 4)
+            ),
+            column(width = 9.5,
+                   valueBoxOutput("desvio2", width = 4)),
+            column(width = 9.5,
+                   valueBoxOutput("var2", width = 4)
+                   
+            )
           )
           
           )
         
         
       ),
-      tabItem(tabName = "Cal",
+      tabItem(tabName = "Emp",
               h2("Em construção"))
     )
   )
@@ -136,7 +154,7 @@ ui <- dashboardPage(
 
 server <- function(input, output, session) {
   require(ggplot2)
-  
+  # Consulta
   output$media <- renderValueBox({
     valueBox(round(mean(iris$Sepal.Length),2), "Valor", icon = icon("check"), color = "red")
   })
@@ -148,6 +166,22 @@ server <- function(input, output, session) {
   output$var <- renderValueBox({
     valueBox(round(mean(iris$Petal.Width),2), "Variação", icon = icon("fad fa-percent"), color = "red")
   })
+  
+  # Cálculo
+  output$valor <- renderValueBox({
+    valueBox(round(median(iris$Petal.Width),2), "Valor", icon = icon("fad fa-percent"), color = "red")
+  })
+  
+  
+  output$desvio2 <- renderValueBox({
+    valueBox(round(mean(iris$Sepal.Width),2), "Desvio", icon = icon("check"), color = "red")
+  })
+  
+  output$var2 <- renderValueBox({
+    valueBox(round(mean(iris$Petal.Width),2), "Variação", icon = icon("fad fa-percent"), color = "red")
+  })
+  
+  
   output$plot1 <- renderPlot({
     ggplot(iris, aes(x=Sepal.Length))+
       theme_minimal()+  geom_histogram(fill="#9F0C0C") +
@@ -167,18 +201,6 @@ server <- function(input, output, session) {
                          breaks=c("setosa", "versicolor", "virginica"))+
       theme(legend.position="bottom")
     
-  })
-  
-  output$menu <- renderMenu({
-    list(
-      "Opção 1",
-      "Opção 2",
-      "Opção 3"
-    )
-  })
-  
-  output$output <- renderText({
-    paste0("Você selecionou a opção ", input$menu)
   })
   
   
