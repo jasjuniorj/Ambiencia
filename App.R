@@ -72,7 +72,7 @@ ui <- dashboardPage(
                     solidHeader = FALSE,
                      selectInput("uf", "Estado", choices = c("AL", "AC", "AP", "AM", "BA"), selected ="AL" ),
                      br(),
-                     textInput("text", "Município:"),
+                     textInput("textM", "Município:"),
                       radioButtons('radiored', 'Rede', list('Pública' = 0, 'Privada' = 1 ), selected = 0, inline = TRUE),
                      radioButtons('radioid', 'Dimensão', list('Demodidática' = 0, 'Formação' = 1 ), selected = 0 ,inline = TRUE),
                      actionButton('Consultar', 'Clique')
@@ -81,8 +81,8 @@ ui <- dashboardPage(
                    tabPanel("Bairro", 
                             h3('Localização'),
                             solidHeader = FALSE,
-                            #textInput("text", "Município:"),
-                            textInput("text", "Bairro:"),
+                            #textInput("textM", "Município:"),
+                            textInput("textB", "Bairro:"),
                             radioButtons('radioid', 'Dimensão', list('Demodidática' = 0, 'Formação' = 1 ), inline = TRUE),
                             actionButton('Consultar', 'Clique'),
                             br(),
@@ -94,6 +94,9 @@ ui <- dashboardPage(
           )),
           fluidRow(
             column(width = 9.5,
+                   msg <- h4("Não encontrado"),
+                   textOutput("msg"),
+                   br(),
               valueBoxOutput("media", width = 4)
             ),
             column(width = 9.5,
@@ -176,6 +179,10 @@ ui <- dashboardPage(
 server <- function(input, output, session) {
   require(ggplot2)
   # Consulta
+  
+ 
+  output$msg <- renderText(str(msg))
+  
   output$media <- renderValueBox({
     valueBox(round(mean(iris$Sepal.Length),2), "Valor", icon = icon("check"), color = "red")
   })
