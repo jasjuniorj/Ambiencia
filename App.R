@@ -75,7 +75,7 @@ ui <- dashboardPage(
                      textInput("textM", "Município:"),
                       radioButtons('radiored', 'Rede', list('Pública' = 0, 'Privada' = 1 ), selected = 0, inline = TRUE),
                      radioButtons('radioid', 'Dimensão', list('Demodidática' = 0, 'Formação' = 1 ), selected = 0 ,inline = TRUE),
-                     actionButton('Consultar', 'Clique')
+                     actionButton('Con', 'Clique')
                      
                    ),
                    tabPanel("Bairro", 
@@ -84,7 +84,7 @@ ui <- dashboardPage(
                             #textInput("textM", "Município:"),
                             textInput("textB", "Bairro:"),
                             radioButtons('radioid', 'Dimensão', list('Demodidática' = 0, 'Formação' = 1 ), inline = TRUE),
-                            actionButton('Consultar', 'Clique'),
+                            actionButton('Con', 'Clique'),
                             br(),
                             br(),
                             "*selecione Estado e Município na análise por município"
@@ -178,10 +178,22 @@ ui <- dashboardPage(
 
 server <- function(input, output, session) {
   require(ggplot2)
+  require(readxl)
   # Consulta
-  
+  observeEvent(input$Con,{
+    base <- read_excel("baseambM.xlsx")
+    mun <- tolower(stri_trans_general(input$TextM, "Latin-ASCII"))
+    mun <- subset(base, MunicNome == mun)
+    
+    if(is.na(mun)){
+      output$msg <- renderText(str(msg))
+    } else{
+      
+    }
+    
+  })
  
-  output$msg <- renderText(str(msg))
+  
   
   output$media <- renderValueBox({
     valueBox(round(mean(iris$Sepal.Length),2), "Valor", icon = icon("check"), color = "red")
