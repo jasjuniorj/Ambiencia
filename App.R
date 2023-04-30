@@ -70,11 +70,15 @@ ui <- dashboardPage(
                      title = "Consulte",
                      tabPanel("Município",
                     solidHeader = FALSE,
-                     selectInput("uf", "Estado", choices = c("AL", "AC", "AP", "AM", "BA"), selected ="AL" ),
+                     selectInput("uf", "Estado", choices = c("AC", "AL", "AP", "AM", "BA",
+                                                             "CE", "DF", "ES", "GO", "AM",
+                                                             "MT", "MS", "MG", "PA", "PB",
+                                                             "PE", "PI", "RJ", "RN", "RS",
+                                                             "RO", "RR", "SC", "SP", "SE", "TO", " "), selected =" " ),
                      br(),
                      textInput("textM", "Município:"),
-                      radioButtons('radiored', 'Rede', list('Pública' = 0, 'Privada' = 1 ), selected = 0, inline = TRUE),
-                     radioButtons('radioid', 'Dimensão', list('Demodidática' = 0, 'Formação' = 1 ), selected = 0 ,inline = TRUE),
+                      radioButtons('radiorede', 'Rede', list('Pública' = 'pública', 'Privada' = 'privada' ), selected = 'pública', inline = TRUE),
+                     radioButtons('radiodim', 'Dimensão', list('Demodidática' = 0, 'Formação' = 1 ), selected = 0 ,inline = TRUE),
                      actionButton('Con', 'Clique')
                      
                    ),
@@ -83,7 +87,7 @@ ui <- dashboardPage(
                             solidHeader = FALSE,
                             #textInput("textM", "Município:"),
                             textInput("textB", "Bairro:"),
-                            radioButtons('radioid', 'Dimensão', list('Demodidática' = 0, 'Formação' = 1 ), inline = TRUE),
+                            radioButtons('radiodim', 'Dimensão', list('Demodidática' = 0, 'Formação' = 1 ), inline = TRUE),
                             actionButton('Con', 'Clique'),
                             br(),
                             br(),
@@ -94,8 +98,6 @@ ui <- dashboardPage(
           )),
           fluidRow(
             column(width = 9.5,
-                   msg <- h4("Não encontrado"),
-                   textOutput("msg"),
                    br(),
               valueBoxOutput("media", width = 4)
             ),
@@ -179,33 +181,69 @@ ui <- dashboardPage(
 server <- function(input, output, session) {
   require(ggplot2)
   require(readxl)
+  base <- read_excel("baseambM.xlsx")
   # Consulta
   observeEvent(input$Con,{
-    base <- read_excel("baseambM.xlsx")
-    mun <- tolower(stri_trans_general(input$TextM, "Latin-ASCII"))
-    mun <- subset(base, MunicNome == mun)
+    subbase <- subset(base, rede2 == input$radiorede)
     
-    if(is.na(mun)){
-      output$msg <- renderText(str(msg))
+    mun <- tolower(stri_trans_general(input$textM, "Latin-ASCII"))
+    #print(mun)
+    indmun <- grep(mun, subbase$MunicNome)
+    #print(indmun)
+   
+    
+    if(length(indmun)==0){
+      
+      output$media <- renderValueBox({
+        valueBox(0.00, "Não encontrado", icon = icon("check"), color = "red") #verificar se precisa ser a média
+      })
+      
+      output$desvio <- renderValueBox({
+        valueBox(0.00, "Não encontrado", icon = icon("check"), color = "red")
+      })
+      
+      output$var <- renderValueBox({
+        valueBox(0.00, "Não encontrado", icon = icon("fad fa-percent"), color = "red")
+      })
+      
+      
     } else{
+      subbase <- subset(subbase, SG_UF == input$uf & MunicNome == mun)
+      if(input$radiodim == 0) {
+        output$media <- renderValueBox({
+          valueBox(round((subbase$Demomean*100),2), "Valor", icon = icon("check"), color = "red") #verificar se precisa ser a média
+        })
+        
+        output$desvio <- renderValueBox({
+          valueBox(round((subbase$Demosd*100),2), "Desvio", icon = icon("check"), color = "red")
+        })
+        
+        output$var <- renderValueBox({
+          valueBox(round(subbase$Democv,2), "Variação", icon = icon("fad fa-percent"), color = "red")
+        })
+        
+      }else{
+        
+        output$media <- renderValueBox({
+          valueBox(round((subbase$Formmean*100),2), "Valor", icon = icon("check"), color = "red") #verificar se precisa ser a média
+        })
+        
+        output$desvio <- renderValueBox({
+          valueBox(round((subbase$Formsd*100),2), "Desvio", icon = icon("check"), color = "red")
+        })
+        
+        output$var <- renderValueBox({
+          valueBox(round(subbase$Formcv,2), "Variação", icon = icon("fad fa-percent"), color = "red")
+        })
+        
+        
+      }
       
     }
     
   })
  
   
-  
-  output$media <- renderValueBox({
-    valueBox(round(mean(iris$Sepal.Length),2), "Valor", icon = icon("check"), color = "red")
-  })
-  
-  output$desvio <- renderValueBox({
-    valueBox(round(mean(iris$Sepal.Width),2), "Desvio", icon = icon("check"), color = "red")
-  })
-  
-  output$var <- renderValueBox({
-    valueBox(round(mean(iris$Petal.Width),2), "Variação", icon = icon("fad fa-percent"), color = "red")
-  })
   
   # Cálculo
   output$valor <- renderValueBox({
@@ -247,6 +285,7 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
+
 
 
 
