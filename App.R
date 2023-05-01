@@ -257,8 +257,8 @@ server <- function(input, output, session) {
         theme(panel.grid.minor = element_blank(),
               panel.grid.major = element_blank())+
         xlab ("Demodidática") + ylab("Frequência")+
-        theme(legend.position="bottom")+ geom_vline(xintercept = val$Demomean,  linetype = "dashed" )+
-        annotate("text", x = val$Demomean+3,  y = 20, label = mun)
+        theme(legend.position="bottom")+ geom_vline(xintercept = val$Demomean,  linetype = "dashed", color = "#3F5B72")+
+        annotate("text", x = val$Demomean+3,  y = 20, label = val$Município, color = "#3F5B72")
       
        
       
@@ -271,8 +271,9 @@ server <- function(input, output, session) {
         theme(panel.grid.minor = element_blank(),
               panel.grid.major = element_blank())+
         xlab ("Formação") + ylab("Frequência")+
-        theme(legend.position="bottom")+geom_vline(xintercept = val$Formmean,  linetype = "dashed")+
-      annotate("text", x = val$Formmean+3,  y = 20, label = mun)
+        theme(legend.position="bottom")+geom_vline(xintercept = val$Formmean,  
+                                                   linetype = "dashed", color = "#3F5B72")+
+      annotate("text", x = val$Formmean+3,  y = 20, label = val$Município, color = "#3F5B72")
      
         
     } })
@@ -286,9 +287,9 @@ server <- function(input, output, session) {
       geom_point(alpha= 0.5, color ="#9F0C0C")+
       geom_smooth(method='lm')+theme_minimal()+
       xlab ("Demodidática") + ylab("Formação")+
-      geom_vline(xintercept =val$Demomean, linetype = "dashed")+
-      geom_hline(yintercept =val$Formmean, linetype = "dashed")+
-      annotate("text", x = val$Demomean+3,  y = val$Formmean+2, label = mun)+
+      geom_vline(xintercept =val$Demomean, linetype = "dashed", color = "#3F5B72")+
+      geom_hline(yintercept =val$Formmean, linetype = "dashed", color = "#3F5B72")+
+      annotate("text", x = val$Demomean+3,  y = val$Formmean+2, label = val$Município, color = "#3F5B72")+
       theme(legend.position="bottom")
   })
   
