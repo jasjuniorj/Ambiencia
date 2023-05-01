@@ -70,8 +70,7 @@ ui <- dashboardPage(
                      title = "Consulte",
                      tabPanel("Município",
                     solidHeader = FALSE,
-                     selectInput("uf", "Estado", choices = c("AC", "AL", "AP", "AM", "BA",
-                                                             "CE", "DF", "ES", "GO", "AM",
+                     selectInput("uf", "Estado", choices = c("AC", "AL", "AP", "AM", "BA","CE", "DF", "ES", "GO", "AM",
                                                              "MT", "MS", "MG", "PA", "PB",
                                                              "PE", "PI", "RJ", "RN", "RS",
                                                              "RO", "RR", "SC", "SP", "SE", "TO", " "), selected =" " ),
@@ -185,7 +184,7 @@ server <- function(input, output, session) {
   base <- read_excel("baseambM.xlsx")
   # Consulta
   observeEvent(input$Con,{
-    subbase <- subset(base, rede2 == input$radiorede)
+    subbase <- subset(base, rede2 == input$radiorede) 
     
     mun <- tolower(stri_trans_general(input$textM, "Latin-ASCII"))
     #print(mun)
@@ -248,29 +247,48 @@ server <- function(input, output, session) {
     
   output$plot1 <- renderPlot({
     
+    
     if(input$radiodim == 0){
+      val <- subset(subgraf, MunicNome == mun) 
+      
+      
       ggplot(subgraf, aes(x=Demomean))+
         theme_minimal()+  geom_histogram(fill="#9F0C0C") +
         theme(panel.grid.minor = element_blank(),
               panel.grid.major = element_blank())+
         xlab ("Demodidática") + ylab("Frequência")+
-        theme(legend.position="bottom")
+        theme(legend.position="bottom")+ geom_vline(xintercept = val$Demomean,  linetype = "dashed" )+
+        annotate("text", x = val$Demomean+3,  y = 20, label = mun)
+      
+       
       
     }else{
+      val <- subset(subgraf, MunicNome == mun)
+      
       
       ggplot(subgraf, aes(x=Formmean))+
         theme_minimal()+  geom_histogram(fill="#9F0C0C") +
         theme(panel.grid.minor = element_blank(),
               panel.grid.major = element_blank())+
         xlab ("Formação") + ylab("Frequência")+
-        theme(legend.position="bottom")
+        theme(legend.position="bottom")+geom_vline(xintercept = val$Formmean,  linetype = "dashed")+
+      annotate("text", x = val$Formmean+3,  y = 20, label = mun)
+     
+        
     } })
     
   output$plot2 <- renderPlot({
-    ggplot(subgraf, aes(x=Formmean, y=Demomean))+
-      geom_point(alpha= 0.5)+
+    
+    val <- subset(subgraf, MunicNome == mun) 
+    
+    
+    ggplot(subgraf, aes(x=Demomean, y= Formmean))+
+      geom_point(alpha= 0.5, color ="#9F0C0C")+
       geom_smooth(method='lm')+theme_minimal()+
-      xlab ("Formação") + ylab("Demodidática")+
+      xlab ("Demodidática") + ylab("Formação")+
+      geom_vline(xintercept =val$Demomean, linetype = "dashed")+
+      geom_hline(yintercept =val$Formmean, linetype = "dashed")+
+      annotate("text", x = val$Demomean+3,  y = val$Formmean+2, label = mun)+
       theme(legend.position="bottom")
   })
   
@@ -303,6 +321,8 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
+
+
 
 
 
