@@ -13,12 +13,12 @@ library(shinyjs)
 mytheme <- create_theme(
   
   adminlte_color(
-    light_blue = "#000000",
+    light_blue = "#3F5B72",
     
   ),
   adminlte_sidebar(
     width = "200px",
-    dark_bg = "#000000", #lateral
+    dark_bg = "#3F5B72", #lateral
     dark_hover_bg = "#CE0707", # detaque da lateral
     dark_color = "#FFFFFF" # fontes da lateral
   ),
