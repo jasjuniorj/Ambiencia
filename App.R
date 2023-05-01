@@ -181,6 +181,7 @@ ui <- dashboardPage(
 server <- function(input, output, session) {
   require(ggplot2)
   require(readxl)
+  require(stringi)
   base <- read_excel("baseambM.xlsx")
   # Consulta
   observeEvent(input$Con,{
@@ -211,11 +212,11 @@ server <- function(input, output, session) {
       subbase <- subset(subbase, SG_UF == input$uf & MunicNome == mun)
       if(input$radiodim == 0) {
         output$media <- renderValueBox({
-          valueBox(round((subbase$Demomean*100),2), "Valor", icon = icon("check"), color = "red") #verificar se precisa ser a média
+          valueBox(round((subbase$Demomean),2), "Valor", icon = icon("check"), color = "red") #verificar se precisa ser a média
         })
         
         output$desvio <- renderValueBox({
-          valueBox(round((subbase$Demosd*100),2), "Desvio", icon = icon("check"), color = "red")
+          valueBox(round((subbase$Demosd),2), "Desvio", icon = icon("check"), color = "red")
         })
         
         output$var <- renderValueBox({
@@ -225,11 +226,11 @@ server <- function(input, output, session) {
       }else{
         
         output$media <- renderValueBox({
-          valueBox(round((subbase$Formmean*100),2), "Valor", icon = icon("check"), color = "red") #verificar se precisa ser a média
+          valueBox(round((subbase$Formmean),2), "Valor", icon = icon("check"), color = "red") #verificar se precisa ser a média
         })
         
         output$desvio <- renderValueBox({
-          valueBox(round((subbase$Formsd*100),2), "Desvio", icon = icon("check"), color = "red")
+          valueBox(round((subbase$Formsd),2), "Desvio", icon = icon("check"), color = "red")
         })
         
         output$var <- renderValueBox({
@@ -241,8 +242,44 @@ server <- function(input, output, session) {
       
     }
     
+  
+ # Gráfico
+    subgraf <- subset(base, rede2 == input$radiorede & SG_UF ==input$uf)
+    
+  output$plot1 <- renderPlot({
+    
+    if(input$radiodim == 0){
+      ggplot(subgraf, aes(x=Demomean))+
+        theme_minimal()+  geom_histogram(fill="#9F0C0C") +
+        theme(panel.grid.minor = element_blank(),
+              panel.grid.major = element_blank())+
+        xlab ("Demodidática") + ylab("Frequência")+
+        theme(legend.position="bottom")
+      
+    }else{
+      
+      ggplot(subgraf, aes(x=Formmean))+
+        theme_minimal()+  geom_histogram(fill="#9F0C0C") +
+        theme(panel.grid.minor = element_blank(),
+              panel.grid.major = element_blank())+
+        xlab ("Formação") + ylab("Frequência")+
+        theme(legend.position="bottom")
+    } })
+    
+  output$plot2 <- renderPlot({
+    ggplot(subgraf, aes(x=Formmean, y=Demomean))+
+      geom_point(alpha= 0.5)+
+      geom_smooth(method='lm')+theme_minimal()+
+      xlab ("Formação") + ylab("Demodidática")+
+      theme(legend.position="bottom")
   })
+  
  
+  
+  })
+  
+  # Bairros
+  
   
   
   # Cálculo
@@ -260,26 +297,7 @@ server <- function(input, output, session) {
   })
   
   
-  output$plot1 <- renderPlot({
-    ggplot(iris, aes(x=Sepal.Length))+
-      theme_minimal()+  geom_histogram(fill="#9F0C0C") +
-      theme(panel.grid.minor = element_blank(),
-            panel.grid.major = element_blank())+
-      xlab ("Length") + ylab("Frequência")+
-      theme(legend.position="bottom")
-  })
-  
-  output$plot2 <- renderPlot({
-   
-    ggplot(iris, aes(x=Sepal.Length, y=Sepal.Width, color=factor(Species)))+
-      geom_point(aes(color = factor(Species)), alpha= 0.5)+
-      geom_smooth(method='lm', aes(color= factor(Species)))+theme_minimal()+
-      xlab ("Length") + ylab("Width)")+
-      scale_color_manual(values = c("#000000", "#4682B4", "#9F0C0C"), name = "Tipo",
-                         breaks=c("setosa", "versicolor", "virginica"))+
-      theme(legend.position="bottom")
-    
-  })
+ 
   
   
 }
