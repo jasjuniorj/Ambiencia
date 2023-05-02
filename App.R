@@ -118,8 +118,8 @@ ui <- dashboardPage(
               height = 480,
               title = " ",
               id = "tabset2", 
-              tabPanel("Histograma", "Gráficos", plotOutput("plot1")),
-              tabPanel("Dispersão", plotOutput("plot2"))
+              tabPanel("Histograma", "Municípios do Estado", plotOutput("plot1")),
+              tabPanel("Dispersão", "Municípios do Estado", plotOutput("plot2"))
             ))
           ),
           br(),
@@ -285,11 +285,12 @@ server <- function(input, output, session) {
     
     ggplot(subgraf, aes(x=Demomean, y= Formmean))+
       geom_point(alpha= 0.5, color ="#9F0C0C")+
+      geom_point(aes(x = val$Demomean, y = val$Formmean), size = 5, color = "#3F5B72")+
       geom_smooth(method='lm')+theme_minimal()+
       xlab ("Demodidática") + ylab("Formação")+
       geom_vline(xintercept =val$Demomean, linetype = "dashed", color = "#3F5B72")+
       geom_hline(yintercept =val$Formmean, linetype = "dashed", color = "#3F5B72")+
-      annotate("text", x = val$Demomean+3,  y = val$Formmean+2, label = val$Município, color = "#3F5B72")+
+      annotate("text", x = val$Demomean+3,  y = val$Formmean+2, label = " ", color = "#3F5B72")+
       theme(legend.position="bottom")
   })
   
